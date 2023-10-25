@@ -1,0 +1,40 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import argparse
+import os
+
+bin_prog_names = [
+    'cuasm',
+    'dsass',
+    'hcubin',
+    'hnvcc'
+]
+
+def gen_symlink(progname:str):
+    source = progname + '.py'
+    target = progname
+    os.system('ln -sf {} {}'.format(source,target))
+    os.system('chmod +x {}'.format(target))
+
+
+def revert_symlink(progname:str):
+    os.system('chmod -x {}'.format(progname))
+    os.system('rm {}'.format(progname))
+
+def run(do_revert):
+    for progname in bin_prog_names:
+        if do_revert:
+            revert_symlink(progname)
+        else:
+            gen_symlink(progname)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog='gensymlink',
+        description='utility tool for generating and removing executable python script symlinks'
+    )
+
+    parser.add_argument("-r",action="store_const",const=True,default=False)
+    args = parser.parse_args()
+    run(args.r)

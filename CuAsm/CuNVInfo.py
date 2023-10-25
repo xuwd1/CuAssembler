@@ -28,6 +28,7 @@ class CuNVInfo(object):
               0x2504 : 'EIATTR_LD_CACHEMOD_INSTR_OFFSETS',
               0x2704 : 'EIATTR_ATOM_SYS_INSTR_OFFSETS',
               0x2804 : 'EIATTR_COOP_GROUP_INSTR_OFFSETS',
+              0X2904 : 'EIATTR_COOP_GROUP_MASK_REGIDS',
               0x2a01 : 'EIATTR_SW1850030_WAR',
               0x2b01 : 'EIATTR_WMMA_USED',
               0x2e04 : 'EIATTR_ATOM16_EMUL_INSTR_REG_MAP',
