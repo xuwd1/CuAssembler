@@ -3,3 +3,6 @@ cuasm
 dsass
 hcubin
 hnvcc
+src/
+pkg/
+*.tar.zst
