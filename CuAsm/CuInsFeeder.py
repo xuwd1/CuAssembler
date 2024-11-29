@@ -260,7 +260,9 @@ class CuInsFeeder():
         self.__TMs = {'default': self.__getTrMatrixDefault(), 
                       '3x'     : self.__getTrMatrixForSM_3x(),
                       '5x6x'   : self.__getTrMatrixForSM_5x6x(),
-                      '7x8x'   : self.__getTrMatrixForSM_7x8x()}
+                      '7x8x'   : self.__getTrMatrixForSM_7x8x(),
+                      '90'     : self.__getTrMatrixForSM_90(),
+                      }
         
         self.__CurrTM = self.__TMs['default']
         self.__mPState = PS.Ready
@@ -377,6 +379,7 @@ class CuInsFeeder():
             need_close = True
         else:
             fout_stream = fout
+            need_close = False
         
         if codeonly_line_mode == 'keep':
             pCodeLine = lambda ctrl_str, l: f'{ctrl_str}  {l}\n'
@@ -604,6 +607,10 @@ class CuInsFeeder():
 
         cs = [int_list[i] + (int_list[i+1]<<64) for i in range(0, len(int_list), 2)]
         return CuSMVersion.splitCtrlCodeFromIntList_7x_8x(cs)
+    
+    def __SplitCodeList_90(self, int_list):
+        # trivally map to 7x8x as the code splitting (split ctrl code from ins code) is the same.
+        return self.__SplitCodeList_7x8x(int_list)
 
     def __iterPopIns(self):
         ''' Pop (addr, code, asm, ctrl) iteratively.'''
@@ -639,6 +646,9 @@ class CuInsFeeder():
         elif smversion.getMajor() in {7,8}:
             self.__CurrTM = self.__TMs['7x8x']
             self.__SplitCodeList = self.__SplitCodeList_7x8x
+        elif (smversion.getMajor() in {9} and smversion.getMinor() in {0}):
+            self.__CurrTM = self.__TMs['90']
+            self.__SplitCodeList = self.__SplitCodeList_90
         else:
             raise NotImplementedError(f'ERROR! No implemented state machine for arch {smversion}!!!')
 
@@ -750,6 +760,9 @@ class CuInsFeeder():
         stm.addop(PS.WaitForCode1, SLT.CodeOnly, PS.Ready, self.__pushCode)
 
         return stm
+    
+    def __getTrMatrixForSM_90(self):
+        return self.__getTrMatrixForSM_7x8x()
 
 if __name__ == '__main__':
     pass

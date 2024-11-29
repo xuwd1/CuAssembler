@@ -504,6 +504,34 @@ class CuSMVersion(object):
             ins_code_list.append(ic)
 
         return ctrl_code_list, ins_code_list
+    
+    @staticmethod
+    def splitCtrlCodeFromBytes_90(codebytes:bytes):
+        ''' Split Control codes and normal codes from bytes object.
+
+            Args:
+                codebytes 
+
+            Return:
+                (ctrl_list, ins_list)
+
+            NOTE: SM90 ctrl code format is the same as SM7x/8x
+        '''
+        return CuSMVersion.splitCtrlCodeFromBytes_7x_8x(codebytes)
+
+    @staticmethod
+    def splitCtrlCodeFromIntList_90(int_list:list):
+        ''' Split Control codes and normal codes from a list of int.
+        
+            Args:
+                int_list   a list of python ints.
+
+            Return:
+                (ins_list, ctrl_list)
+
+            NOTE: SM90 ctrl code format is the same as SM7x/8x
+        '''
+        return CuSMVersion.splitCtrlCodeFromIntList_7x_8x(int_list)
 
     @staticmethod
     def remixCode_5x_6x(i0, i1, i2, c0, c1, c2):
