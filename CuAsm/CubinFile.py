@@ -298,7 +298,7 @@ class CubinFile():
         # extract nvinfo, get offset label dict
         # some offset nvinfo cannot recover from assembly
         # thus we need this label to keep them unaffected
-        kname = re.sub('^\.text\.', '', secname)
+        kname = re.sub(r'^\.text\.', '', secname)
         nvinfo_secname = '.nv.info.' + kname
         if nvinfo_secname not in self.__mELFSections:
             raise KeyError('Info section (%s) not found!'%nvinfo_secname)
