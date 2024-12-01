@@ -657,7 +657,7 @@ class CuInsFeeder():
         ''' Demangle the function name using cu++filt. '''
         try:
             import subprocess
-            subprocess_result = subprocess.run(["cu++filt", func_name], stdout=subprocess.PIPE) 
+            subprocess_result = subprocess.run(["c++filt", func_name], stdout=subprocess.PIPE) 
             return subprocess_result.stdout.decode("utf-8")
         except Exception as e:
             CuAsmLogger.logWarning(f'Failed to demangle function name {func_name} due to {e}!')
