@@ -1,6 +1,6 @@
 pkgname=python-cuasm-git
 _name=CuAssembler
-pkgrel=1
+pkgrel=2
 pkgver=0.2
 pkgdesc="CUDA SASS assembler/disassembler"
 url="https://github.com/xuwd1/CuAssembler"
