@@ -377,7 +377,7 @@ class CuInsParser():
         return t, v, modi
 
     def __parsePred(self, s):
-        ''' Parse predicates (@!?U?P[\dT]) to values.
+        r''' Parse predicates (@!?U?P[\dT]) to values.
 
         '''
 

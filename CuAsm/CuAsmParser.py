@@ -1693,7 +1693,7 @@ class CuAsmParser(object):
         self.__mCurrSection.emitBytes(bs)
 
     def __getLineType(self, line):
-        '''There can be three line types:
+        r'''There can be three line types:
 
             1. Directive: starts with ".\w+", but no following ":"
             2. Label: label name followed by ":"

@@ -250,6 +250,7 @@ class CuInsFeeder():
         self.__mLineNo = 0
 
         self.CurrFuncName = ''
+        self.CurrFuncNameDemangled = ''
         self.CurrArch = ''
 
         self.__SplitCodeList = lambda x: (x, x)
@@ -358,7 +359,7 @@ class CuInsFeeder():
                         yield addr, code, asm, ctrl
 
     @CuAsmLogger.logTimeIt
-    def trans(self, fout, codeonly_line_mode='none'):
+    def trans(self, fout, codeonly_line_mode='none', custom=False):
         ''' Translate an input sass to sass with control codes. 
             The sass input is usually obtained by `cuobjdump -sass fname > a.sass`.
 
@@ -369,6 +370,10 @@ class CuInsFeeder():
 
                 'keep' : keep unchanged
                 'none' : skipped (default)
+            custom :
+                apply custom output logics:
+                1. the demangled function name will be appended after the function name line.
+                2. the ouput text will be more tightly formatted.
             
             NOTE: the filter does not work for this function.
             NOTE 2: this function is not quite robust, not recommended for any hand-written sass.
@@ -412,7 +417,12 @@ class CuInsFeeder():
                     if lt == SLT.InsCode:
                         __, __, __, ctrl = inslist.pop(0)
                         ctrl_str = self.formatCtrlCodeString(ctrl)
+                        fcollapser = lambda s: re.sub(r'(    )', ' ', s)
+                        fremover = lambda s: s.split(';', 1)[0] + ';'
                         line = f'{ctrl_str}  {l}'
+                        if custom:
+                            line = fcollapser(line)
+                            line = fremover(line)
                         out_buffers.append(line + '\n')
                         if line_len == -1:
                             line_len = len(line)
@@ -429,6 +439,23 @@ class CuInsFeeder():
                             oline = pCodeLine(ctrl_str, l)
                             if oline is not None:
                                 out_buffers.append(oline)
+                    elif lt == SLT.FuncName:
+                        out_buffers.append(l+'\n')
+                        if custom:
+                            def count_leading_tabs_in_line(l):
+                                count = 0
+                                for c in l:
+                                    if c != '\t':
+                                        break
+                                    else:
+                                        count += 1
+                                return count
+
+                            tab_count = count_leading_tabs_in_line(l)
+                            
+                            demangled_name_line_list = ['\t' for _ in range(tab_count)] + ['Demangled Function : {}\n'.format(self.CurrFuncNameDemangled)]
+                            demangled_name_line = ''.join(demangled_name_line_list)
+                            out_buffers.append(demangled_name_line)
                     else:
                         out_buffers.append(l+'\n')
                     
@@ -625,13 +652,31 @@ class CuInsFeeder():
         self.__mAddrList = []
         self.__mCodeList = []
         self.__mAsmList = []
+
+    def __demangleFuncName(self, func_name:str):
+        ''' Demangle the function name using cu++filt. '''
+        try:
+            import subprocess
+            subprocess_result = subprocess.run(["cu++filt", func_name], stdout=subprocess.PIPE) 
+            return subprocess_result.stdout.decode("utf-8")
+        except Exception as e:
+            CuAsmLogger.logWarning(f'Failed to demangle function name {func_name} due to {e}!')
+            return func_name
         
     def __setFuncName(self, func):
         self.CurrFuncName = func
+        self.CurrFuncNameDemangled = self.__demangleFuncName(func)
 
     def __setSectionName(self, sec):
         ''' section name is .text.funcname. '''
         self.CurrFuncName = sec
+
+        # extract "sec" match
+        m = re.search(SLT.SectionName, sec)
+        if m:
+            extracted_sec = m.group('sec')
+            self.CurrFuncNameDemangled = self.__demangleFuncName(extracted_sec)
+            
 
     def __switchArch(self, arch):
         smversion = CuSMVersion(arch)
