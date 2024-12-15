@@ -359,7 +359,7 @@ class CuInsFeeder():
                         yield addr, code, asm, ctrl
 
     @CuAsmLogger.logTimeIt
-    def trans(self, fout, codeonly_line_mode='none', custom=False):
+    def trans(self, fout, codeonly_line_mode='none', custom=False, res_usage_dict=None):
         ''' Translate an input sass to sass with control codes. 
             The sass input is usually obtained by `cuobjdump -sass fname > a.sass`.
 
@@ -374,10 +374,14 @@ class CuInsFeeder():
                 apply custom output logics:
                 1. the demangled function name will be appended after the function name line.
                 2. the ouput text will be more tightly formatted.
+                3. expect the res_usage_dict to be provided and res-usage will be appended after the function name lines.
             
             NOTE: the filter does not work for this function.
             NOTE 2: this function is not quite robust, not recommended for any hand-written sass.
         '''
+
+        if custom:
+            assert res_usage_dict is not None, 'res_usage_dict should be provided when custom is True!'
 
         if isinstance(fout, str):
             fout_stream = open(fout, 'w+')
@@ -441,21 +445,33 @@ class CuInsFeeder():
                                 out_buffers.append(oline)
                     elif lt == SLT.FuncName:
                         out_buffers.append(l+'\n')
-                        if custom:
-                            def count_leading_tabs_in_line(l):
-                                count = 0
-                                for c in l:
-                                    if c != '\t':
-                                        break
-                                    else:
-                                        count += 1
-                                return count
+                        if not custom:
+                            return
+                        
+                        # custom logics begin
 
-                            tab_count = count_leading_tabs_in_line(l)
+                        def count_leading_tabs_in_line(l):
+                            count = 0
+                            for c in l:
+                                if c != '\t':
+                                    break
+                                else:
+                                    count += 1
+                            return count
+
+                        tab_count = count_leading_tabs_in_line(l)
+                        tab_list = ['\t' for _ in range(tab_count)]
+                        
+                        demangled_name_line_list = tab_list + ['Demangled Function : {}\n'.format(self.CurrFuncNameDemangled)]
+                        demangled_name_line = ''.join(demangled_name_line_list)
+
+                        out_buffers.append(demangled_name_line)
+                        
+                        if self.CurrFuncName in res_usage_dict:
+                            res_usage_line_list = tab_list + ['Resource Usage : {}\n'.format(res_usage_dict[self.CurrFuncName])]
+                            res_usage_line = ''.join(res_usage_line_list)
+                            out_buffers.append(res_usage_line)
                             
-                            demangled_name_line_list = ['\t' for _ in range(tab_count)] + ['Demangled Function : {}\n'.format(self.CurrFuncNameDemangled)]
-                            demangled_name_line = ''.join(demangled_name_line_list)
-                            out_buffers.append(demangled_name_line)
                     else:
                         out_buffers.append(l+'\n')
                     
@@ -654,7 +670,7 @@ class CuInsFeeder():
         self.__mAsmList = []
 
     def __demangleFuncName(self, func_name:str):
-        ''' Demangle the function name using cu++filt. '''
+        ''' Custom: Demangle the function name using c++filt. '''
         try:
             import subprocess
             subprocess_result = subprocess.run(["c++filt", func_name], stdout=subprocess.PIPE) 
