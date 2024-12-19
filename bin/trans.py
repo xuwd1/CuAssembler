@@ -91,6 +91,10 @@ def do_trans(
     sass = sass_b.decode()
     sass_string_io = StringIO(sass)
 
+    # print("sass_string_io", sass_string_io)
+    # content = sass_string_io.read()
+    # print(content)
+
     feeder = CuInsFeeder(sass_string_io)
     feeder.trans(str(output_file_path), custom=True, res_usage_dict=res_usage_dict)
 
