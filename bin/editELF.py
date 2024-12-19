@@ -171,8 +171,8 @@ def modify_elf(file, section_name):
             else:
                 print("No next HMMA instruction found.")
                 return
-            # 检查当前HMMA指令是否reuse rs2(matrix B)
-            next_reuse_rs2_offset = find_in_sections('tf32-1688', '.nv_fatbin', b'\x0f\x08', start_offset = cur_HMMA_Inst_offset + 1)
+            # 检查当前HMMA指令是否reuse rs2(matrix B) SM80下编译为 \x0b\x08, SM89下编译为 \x0f\x08, 
+            next_reuse_rs2_offset = find_in_sections('tf32-1688', '.nv_fatbin', b'\x0b\x08', start_offset = cur_HMMA_Inst_offset + 1)
             offset_diff = next_reuse_rs2_offset - cur_HMMA_Inst_offset
             if(offset_diff > 0 and offset_diff < 16):
                 print("Reuse rs2(matrix B) detected.")
