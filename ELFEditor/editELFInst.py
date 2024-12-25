@@ -7,7 +7,12 @@ import logging
 import instruction_config  # 导入配置模块
 
 # 配置日志
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    filename='editELFInst.log',
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 
 COMMON_FIELDS = instruction_config.COMMON_FIELDS
 INSTRUCTION_TYPES = instruction_config.INSTRUCTION_TYPES

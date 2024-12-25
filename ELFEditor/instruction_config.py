@@ -8,7 +8,11 @@ COMMON_FIELDS = {
     "yield_flag": (109, 109),  # 位 109
     "write_barrier": (110, 112),  # 位 110-112
     "read_barrier": (113, 115),  # 位 113-115
-    "wait_barrier": (116, 121)  # 位 116-121
+    "wait_barrier": (116, 121),  # 位 116-121
+    "rd": (16, 23),  # 位 16-23
+    "rs1": (24, 31),  # 位 24-31
+    "rs2": (32, 39),  # 位 32-39
+    "rs3": (64, 71),  # 位 64-71
 }
 
 INSTRUCTION_TYPES = [
@@ -34,7 +38,9 @@ INSTRUCTION_TYPES = [
         "opcode1": None,  # 默认类型，不基于 opcode1 匹配
         "opcode2": None,  # 默认类型，不基于 opcode2 匹配
         "fields": {
-            "reuse_flag": (122, 125)
+            "reuse_flag": (122, 125),
+            "reuse_rs1": (122, 122),
+            "reuse_rs2": (123, 123),
         }
     }
 ]
