@@ -21,7 +21,7 @@ from elftools.elf.elffile import ELFFile
 import logging
 
 SINGLE_INST_BYTES = 16
-INST_WINDOW_SIZE = 5
+INST_WINDOW_SIZE = 8
 INST_WINDOW_BYTES = SINGLE_INST_BYTES * INST_WINDOW_SIZE
 
 
@@ -84,7 +84,7 @@ def reuse_rs12_betweenHMMA(elf_file):
                 # since the reuse_flag of the first HMMA instruction is changed,
                 # set the yield_flag of the instructions between the two HMMA instructions to be 1
                 no_yield_range = range(cur_HMMA_Inst_offset, next_HMMA_Inst_offset, SINGLE_INST_BYTES) # [start, stop)
-                end_of_no_yield_range = cur_HMMA_Inst_offset
+                end_of_no_yield_range = next_HMMA_Inst_offset
                 
                 # TODO: check if the rs1 or rs2 of instructions in the range should be reused
                 # if there is repeated rs1 or rs2 in the window_size for an instruction
