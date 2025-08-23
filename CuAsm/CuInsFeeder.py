@@ -263,6 +263,7 @@ class CuInsFeeder():
                       '5x6x'   : self.__getTrMatrixForSM_5x6x(),
                       '7x8x'   : self.__getTrMatrixForSM_7x8x(),
                       '90'     : self.__getTrMatrixForSM_90(),
+                      '120'    : self.__getTrMatrixForSM_120(),
                       }
         
         self.__CurrTM = self.__TMs['default']
@@ -654,6 +655,10 @@ class CuInsFeeder():
     def __SplitCodeList_90(self, int_list):
         # trivally map to 7x8x as the code splitting (split ctrl code from ins code) is the same.
         return self.__SplitCodeList_7x8x(int_list)
+    
+    def __SplitCodeList_120(self, int_list):
+        # trivally map to 7x8x as the code splitting (split ctrl code from ins code) is the same.
+        return self.__SplitCodeList_7x8x(int_list)
 
     def __iterPopIns(self):
         ''' Pop (addr, code, asm, ctrl) iteratively.'''
@@ -710,6 +715,9 @@ class CuInsFeeder():
         elif (smversion.getMajor() in {9} and smversion.getMinor() in {0}):
             self.__CurrTM = self.__TMs['90']
             self.__SplitCodeList = self.__SplitCodeList_90
+        elif smversion.getMajor() in {12}:
+            self.__CurrTM = self.__TMs['120']
+            self.__SplitCodeList = self.__SplitCodeList_120
         else:
             raise NotImplementedError(f'ERROR! No implemented state machine for arch {smversion}!!!')
 
@@ -823,6 +831,9 @@ class CuInsFeeder():
         return stm
     
     def __getTrMatrixForSM_90(self):
+        return self.__getTrMatrixForSM_7x8x()
+
+    def __getTrMatrixForSM_120(self):
         return self.__getTrMatrixForSM_7x8x()
 
 if __name__ == '__main__':

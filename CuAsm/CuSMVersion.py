@@ -30,7 +30,7 @@ class CuSMVersion(object):
                                      60, 61, 62, 
                                      70, 72, 75, 
                                      80, 86, 87, 89, 
-                                     90])
+                                     90, 120])
 
     # Some versions do not have pre-gathered InsAsmRepos, but since the encoding may be almost identical
     # we may just copy the InsAsmRepos from another version     
@@ -41,7 +41,7 @@ class CuSMVersion(object):
                        60:'Pascal',  61:'Pascal',  62:'Pascal',
                        70:'Volta',   72:'Turing',  75:'Turing',
                        80:'Ampere',  86:'Ampere',  87:'Ampere',
-                       89:'Adalovelace', 90:'Hopper'}
+                       89:'Adalovelace', 90:'Hopper', 120:'GeforceBlackwell'}
 
     PadBytes_5x_6x  = bytes.fromhex('e00700fc00801f00 000f07000000b050 000f07000000b050 000f07000000b050')
     Pad_CCode_5x_6x = 0x7e0               # [----:B------:R-:W-:Y:S00]
@@ -138,7 +138,7 @@ class CuSMVersion(object):
 
             if self.__mMajor == 7:
                 self.m_PosDepOpcodes = self.POSDEP_Opcodes_SM7x
-            elif self.__mMajor == 8:
+            elif self.__mMajor == 8 or self.__mMajor == 9 or self.__mMajor == 12:
                 self.m_PosDepOpcodes = self.POSDEP_Opcodes_SM8x
             else:
                 self.m_PosDepOpcodes = self.POSDEP_Opcodes_Common
@@ -532,6 +532,35 @@ class CuSMVersion(object):
             NOTE: SM90 ctrl code format is the same as SM7x/8x
         '''
         return CuSMVersion.splitCtrlCodeFromIntList_7x_8x(int_list)
+    
+    @staticmethod
+    def splitCtrlCodeFromBytes_120(codebytes:bytes):
+        ''' Split Control codes and normal codes from bytes object.
+
+            Args:
+                codebytes 
+
+            Return:
+                (ctrl_list, ins_list)
+
+            NOTE: SM90 ctrl code format is the same as SM7x/8x
+        '''
+        return CuSMVersion.splitCtrlCodeFromBytes_7x_8x(codebytes)
+
+    @staticmethod
+    def splitCtrlCodeFromIntList_120(int_list:list):
+        ''' Split Control codes and normal codes from a list of int.
+        
+            Args:
+                int_list   a list of python ints.
+
+            Return:
+                (ins_list, ctrl_list)
+
+            NOTE: SM90 ctrl code format is the same as SM7x/8x
+        '''
+        return CuSMVersion.splitCtrlCodeFromIntList_7x_8x(int_list)
+    
 
     @staticmethod
     def remixCode_5x_6x(i0, i1, i2, c0, c1, c2):
