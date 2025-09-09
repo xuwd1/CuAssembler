@@ -9,7 +9,8 @@ bin_prog_names = [
     'dsass',
     'hcubin',
     'hnvcc',
-    'trans'
+    'trans',
+    'regcount'
 ]
 
 def gen_symlink(progname:str):

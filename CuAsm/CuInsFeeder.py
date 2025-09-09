@@ -6,6 +6,7 @@ from enum import Enum, auto
 from CuAsm.CuSMVersion import CuSMVersion
 from CuAsm.CuAsmLogger import CuAsmLogger
 from CuAsm.CuControlCode import c_ControlStringLen, CuControlCode
+from typing import List
 
 class SassLineType(Enum):
     ''' Six types of lines in a dumped sass file:
@@ -447,7 +448,7 @@ class CuInsFeeder():
                     elif lt == SLT.FuncName:
                         out_buffers.append(l+'\n')
                         if not custom:
-                            return
+                            continue
                         
                         # custom logics begin
 

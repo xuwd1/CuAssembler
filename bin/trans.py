@@ -15,6 +15,7 @@ from CuAsm.utils.CubinUtils import fixCubinDesc
 from CuAsm.common import getTempFileName
 import argparse
 from dataclasses import dataclass
+import regcount
 
 @dataclass
 class ResUsageStat:
@@ -59,7 +60,7 @@ class ResUsageStat:
         )
     
     def __str__(self):
-        return f"REG:{self.REG} STACK:{self.STACK} SHARED:{self.SHARED} LOCAL:{self.LOCAL} CONSTANT[0]:{self.CONSTANT_0} TEXTURE:{self.TEXTURE} SURFACE:{self.SURFACE} SAMPLER:{self.SAMPLER}"
+        return f"(cuobjdump) REG:{self.REG} STACK:{self.STACK} SHARED:{self.SHARED} LOCAL:{self.LOCAL} CONSTANT[0]:{self.CONSTANT_0} TEXTURE:{self.TEXTURE} SURFACE:{self.SURFACE} SAMPLER:{self.SAMPLER}"
         
 def build_usage_dict(
         input_file_path: pathlib.Path
@@ -97,6 +98,8 @@ def do_trans(
 
     feeder = CuInsFeeder(sass_string_io)
     feeder.trans(str(output_file_path), custom=True, res_usage_dict=res_usage_dict)
+
+    regcount.run_regcount_on_file(output_file_path, output_file_path)
 
 
 def main():
