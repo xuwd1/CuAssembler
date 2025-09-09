@@ -22,6 +22,7 @@ package() {
     local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
     mkdir -p ${pkgdir}${site_packages}
     cp -r CuAsm ${pkgdir}${site_packages}/CuAsm
+    cp bin/regcount.py ${pkgdir}${site_packages}/regcount.py
 
 
     
@@ -30,4 +31,5 @@ package() {
     install -Dm755 bin/hnvcc.py ${pkgdir}/usr/bin/hnvcc
     install -Dm755 bin/hcubin.py ${pkgdir}/usr/bin/hcubin
     install -Dm755 bin/trans.py ${pkgdir}/usr/bin/trans
+    install -Dm755 bin/regcount.py ${pkgdir}/usr/bin/regcount
 }
