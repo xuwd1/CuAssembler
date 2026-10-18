@@ -25,12 +25,12 @@ class CuSMVersion(object):
 
     __InstanceRepos = {}
 
-    SMVersionDict = makeVersionDict([35, 37, 
-                                     50, 52, 53, 
-                                     60, 61, 62, 
-                                     70, 72, 75, 
-                                     80, 86, 87, 89, 
-                                     90, 120])
+    SMVersionDict = makeVersionDict([35, 37,
+                                     50, 52, 53,
+                                     60, 61, 62,
+                                     70, 72, 75,
+                                     80, 86, 87, 89,
+                                     90, 100, 101, 110, 120])
 
     # Some versions do not have pre-gathered InsAsmRepos, but since the encoding may be almost identical
     # we may just copy the InsAsmRepos from another version     
@@ -40,8 +40,12 @@ class CuSMVersion(object):
                        50:'Maxwell', 52:'Maxwell', 53:'Maxwell',
                        60:'Pascal',  61:'Pascal',  62:'Pascal',
                        70:'Volta',   72:'Turing',  75:'Turing',
-                       80:'Ampere',  86:'Ampere',  87:'Ampere',
-                       89:'Adalovelace', 90:'Hopper', 120:'GeforceBlackwell'}
+                       80:'Ampere',  86:'Ampere',  87:'AmpereOrin',
+                       89:'Ada', 90:'Hopper',
+                       100:'BlackwellUltra',
+                       101:'BlackwellThorOld',
+                       110:'BlackwellThor',
+                       120:'BlackwellGeforce'}
 
     PadBytes_5x_6x  = bytes.fromhex('e00700fc00801f00 000f07000000b050 000f07000000b050 000f07000000b050')
     Pad_CCode_5x_6x = 0x7e0               # [----:B------:R-:W-:Y:S00]
@@ -72,11 +76,12 @@ class CuSMVersion(object):
     CCPos1_5x_6x = 21
     CCPos2_5x_6x = 42 
 
-    # Bit mask of control codes for sm7x/8x
+    # Bit mask of control codes for sm7x/8x; the same 17-bit field is
+    # observed at the same position on sm90/sm100/sm120 128-bit instructions.
     # NOTE: reuse bits not included
     CCMask_7x_8x = 0x1ffff<<(64+41)
-    
-    # Bit position for control codes of sm7x/8x
+
+    # Bit position for control codes of sm7x/8x (shared by sm90/sm100/sm120)
     CCPos_7x_8x = 64+41
 
     RelMaps_7x_8x = {'32@hi' : 'R_CUDA_ABS32_HI_32',
@@ -138,7 +143,7 @@ class CuSMVersion(object):
 
             if self.__mMajor == 7:
                 self.m_PosDepOpcodes = self.POSDEP_Opcodes_SM7x
-            elif self.__mMajor == 8 or self.__mMajor == 9 or self.__mMajor == 12:
+            elif self.__mMajor in {8, 9, 10, 11, 12}:
                 self.m_PosDepOpcodes = self.POSDEP_Opcodes_SM8x
             else:
                 self.m_PosDepOpcodes = self.POSDEP_Opcodes_Common
@@ -191,8 +196,8 @@ class CuSMVersion(object):
     def getInstructionLength(self):
         ''' (At least) Since Kepler, SASS becomes a constant length ISA.
 
-            5.x 6.x :  64bit =  8 bytes (1 control codes + 3 normal instructions)
-            7.x 8.x : 128bit = 16 bytes
+            5.x 6.x                    :  64bit =  8 bytes (1 control codes + 3 normal instructions)
+            7.x 8.x (and 90/100/120)   : 128bit = 16 bytes
         '''
         if self.__mMajor<=6:
             return 8
