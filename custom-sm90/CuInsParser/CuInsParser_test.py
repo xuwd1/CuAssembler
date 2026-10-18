@@ -14,9 +14,9 @@ import CuAsm
 CUBLAS_LT_LIB_SO_PATH = pathlib.Path("/opt") / "/cuda/targets/x86_64-linux/lib/libcublasLt.so"
 CUBLAS_LIB_SO_PATH = pathlib.Path("/opt") / "/cuda/targets/x86_64-linux/lib/libcublas.so"
 
-CUBLAS_LT_LIB_SM90_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"libcublasLt.sm_90.sass"
-CUBLAS_LIB_SM90_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"libcublas.sm_90.sass"
-CUBLAS_LIB_SM90A_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"libcublas.sm_90a.sass"
+CUBLAS_LT_LIB_SM90_SASS_PATH = _THIS_SCRIPT_DIR.parent / "CuInsFeeder"/"sm90_extract"/"cublas_lt.sass"
+CUBLAS_LIB_SM90_SASS_PATH = _THIS_SCRIPT_DIR.parent / "CuInsFeeder"/"sm90_extract"/"cublas.sass"
+CUBLAS_LIB_SM90A_SASS_PATH = _THIS_SCRIPT_DIR.parent / "CuInsFeeder"/"sm90a_extract"/"cublas.sass"
 
 ISOLATED_HGMMA_KERNEL_1_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/ "isolated_hgmma_kernel_1.sass"
 ISOLATED_HGMMA_KERNEL_2_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"isolated_hgmma_kernel_2.sass"

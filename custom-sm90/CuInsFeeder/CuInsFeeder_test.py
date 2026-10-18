@@ -1,61 +1,68 @@
 import sys
 import pathlib
-import os
 
-_THIS_SCRIPT_DIR = pathlib.Path(__file__).parent
-_CuAsm_Containing_DIR = _THIS_SCRIPT_DIR.parent.parent
+_THIS_SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+_CUSTOM_SM90_DIR = _THIS_SCRIPT_DIR.parent
+_CUASM_CONTAINING_DIR = _THIS_SCRIPT_DIR.parent.parent
+assert (_CUASM_CONTAINING_DIR / "LICENCE.md").exists()
 
-assert (_CuAsm_Containing_DIR / "LICENCE.md").exists()
-
-sys.path.insert(0, str(_CuAsm_Containing_DIR))
-
+sys.path.insert(0, str(_CUASM_CONTAINING_DIR))
 import CuAsm
 
-CUBLAS_LT_LIB_SO_PATH = pathlib.Path("/opt") / "/cuda/targets/x86_64-linux/lib/libcublasLt.so"
-CUBLAS_LIB_SO_PATH = pathlib.Path("/opt") / "/cuda/targets/x86_64-linux/lib/libcublas.so"
-
-CUBLAS_LT_LIB_SM90_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"libcublasLt.sm_90.sass"
-CUBLAS_LIB_SM90_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"libcublas.sm_90.sass"
-CUBLAS_LIB_SM90A_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"libcublas.sm_90a.sass"
-
-ISOLATED_HGMMA_KERNEL_1_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/ "isolated_hgmma_kernel_1.sass"
-ISOLATED_HGMMA_KERNEL_2_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"isolated_hgmma_kernel_2.sass"
-
-ISOLATED_HMMA_KERNEL_1_SASS_PATH = _THIS_SCRIPT_DIR.parent / "sass"/"isolated_hmma_kernel_1.sass"
+_TRANS_OUTPUT_DIR = _THIS_SCRIPT_DIR / "trans_output"
 
 
+SM90_ISOLATED_HGMMA_KERNEL_1_SASS_PATH = _CUSTOM_SM90_DIR / "sass" / "isolated_hgmma_kernel_1.sass"
+SM90_ISOLATED_HGMMA_KERNEL_2_SASS_PATH = _CUSTOM_SM90_DIR / "sass" / "isolated_hgmma_kernel_2.sass"
+SM90_ISOLATED_HMMA_KERNEL_1_SASS_PATH = _CUSTOM_SM90_DIR / "sass" / "isolated_hmma_kernel_1.sass"
 
+assert SM90_ISOLATED_HGMMA_KERNEL_1_SASS_PATH.exists()
+assert SM90_ISOLATED_HGMMA_KERNEL_2_SASS_PATH.exists()
+assert SM90_ISOLATED_HMMA_KERNEL_1_SASS_PATH.exists()
 
 def try_CuInsFeeder(sass_file_path: pathlib.Path):
     sass_file_path_str = str(sass_file_path)
     feeder = CuAsm.CuInsFeeder(sass_file_path_str)
+    try:
+        print(feeder)
 
-    print(feeder)
+        count = 0
+        for addr, code, asm, ctrlcode in feeder:
+            if count == 0:
+                '''
+                    这个ctrlcode是不被包含在code里的.
+                    也就是说, code和ctrlcode共同组成了整个指令的编码, 二者在指令编码中没有重叠.
+                '''
+                print(f"addr: {addr}")
+                print(f"code: {code}")
+                print(f"asm: {asm}")
+                print(f"ctrlcode: {ctrlcode}")
+            count += 1
 
-    feeder_iter = iter(feeder)
-    addr,code,asm,ctrlcode  = next(feeder_iter)
-
-    '''
-        这个ctrlcode是不被包含在code里的.
-        也就是说, code和ctrlcode共同组成了整个指令的编码, 二者在指令编码中没有重叠.    
-    '''
-    print(f"addr: {addr}")
-    print(f"code: {code}")
-    print(f"asm: {asm}")
-    print(f"ctrlcode: {ctrlcode}")
-
-    return
+        print(f"total instructions: {count}")
+    finally:
+        feeder.close()
 
 def try_CuInsFeeder_trans(sass_file_path: pathlib.Path):
     sass_file_path_str = str(sass_file_path)
-    out_file_path = _THIS_SCRIPT_DIR / (sass_file_path.stem + ".sass.control")
+    _TRANS_OUTPUT_DIR.mkdir(exist_ok=True)
+    out_file_path = _TRANS_OUTPUT_DIR / (sass_file_path.stem + ".sass.control")
     out_file_path_str = str(out_file_path)
     feeder = CuAsm.CuInsFeeder(sass_file_path_str)
+    try:
+        # Isolated sass dumps carry no resource-usage data, so pass an empty map.
+        feeder.trans(out_file_path_str, custom=True, res_usage_dict={})
+    finally:
+        feeder.close()
 
-    feeder.trans(out_file_path_str, custom=True)
+    print(f"trans output: {out_file_path}")
 
-    
+def main():
+    for sass_file_path in (SM90_ISOLATED_HGMMA_KERNEL_1_SASS_PATH,
+                           SM90_ISOLATED_HGMMA_KERNEL_2_SASS_PATH,
+                           SM90_ISOLATED_HMMA_KERNEL_1_SASS_PATH):
+        try_CuInsFeeder(sass_file_path)
+        try_CuInsFeeder_trans(sass_file_path)
 
-try_CuInsFeeder(ISOLATED_HGMMA_KERNEL_1_SASS_PATH)
-try_CuInsFeeder_trans(ISOLATED_HGMMA_KERNEL_1_SASS_PATH)
-try_CuInsFeeder_trans(ISOLATED_HMMA_KERNEL_1_SASS_PATH)
+if __name__ == '__main__':
+    main()

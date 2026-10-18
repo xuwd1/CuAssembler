@@ -13,10 +13,10 @@ find /opt -iname '*libcublas*' 2>/dev/null
 ```bash
 
 # libcublas.so
-cuobjdump -sass -arch sm_90 /opt/cuda/targets/x86_64-linux/lib/libcublas.so > libcublas.sm_90.sass  
+cuobjdump -sass -arch sm_90 /opt/cuda/targets/x86_64-linux/lib/libcublas.so > sm90_extract/cublas.sass
 
 # libcublasLt.so
-cuobjdump -sass -arch sm_90 /opt/cuda/targets/x86_64-linux/lib/libcublasLt.so > libcublasLt.sm_90.sass
+cuobjdump -sass -arch sm_90 /opt/cuda/targets/x86_64-linux/lib/libcublasLt.so > sm90_extract/cublas_lt.sass
 ```
 
 ### Caveats
