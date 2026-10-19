@@ -14,9 +14,11 @@ _TRANS_OUTPUT_DIR = _THIS_SCRIPT_DIR / "trans_output"
 
 SM100_ISOLATED_UTCIMMA_KERNEL_1_SASS_PATH = _CUSTOM_SM100_DIR / "sass" / "isolated_utcimma_kernel_1.sass"
 SM100_ISOLATED_HMMA_KERNEL_1_SASS_PATH = _CUSTOM_SM100_DIR / "sass" / "isolated_hmma_kernel_1.sass"
+SM100_ISOLATED_FFMA2_KERNEL_1_SASS_PATH = _CUSTOM_SM100_DIR / "sass" / "isolated_ffma2_kernel_1.sass"
 
 assert SM100_ISOLATED_UTCIMMA_KERNEL_1_SASS_PATH.exists()
 assert SM100_ISOLATED_HMMA_KERNEL_1_SASS_PATH.exists()
+assert SM100_ISOLATED_FFMA2_KERNEL_1_SASS_PATH.exists()
 
 def try_CuInsFeeder(sass_file_path: pathlib.Path):
     sass_file_path_str = str(sass_file_path)
@@ -57,7 +59,8 @@ def try_CuInsFeeder_trans(sass_file_path: pathlib.Path):
 
 def main():
     for sass_file_path in (SM100_ISOLATED_UTCIMMA_KERNEL_1_SASS_PATH,
-                           SM100_ISOLATED_HMMA_KERNEL_1_SASS_PATH):
+                           SM100_ISOLATED_HMMA_KERNEL_1_SASS_PATH,
+                           SM100_ISOLATED_FFMA2_KERNEL_1_SASS_PATH):
         try_CuInsFeeder(sass_file_path)
         try_CuInsFeeder_trans(sass_file_path)
 
