@@ -721,7 +721,7 @@ class CuInsFeeder():
         elif (smversion.getMajor() in {9} and smversion.getMinor() in {0}):
             self.__CurrTM = self.__TMs['90']
             self.__SplitCodeList = self.__SplitCodeList_90
-        elif smversion.getVersionNumber() in {100, 101, 110}:
+        elif smversion.getVersionNumber() in {100, 101, 103, 107, 110}:
             self.__CurrTM = self.__TMs['100']
             self.__SplitCodeList = self.__SplitCodeList_100
         elif smversion.getMajor() in {12}:

@@ -30,7 +30,7 @@ class CuSMVersion(object):
                                      60, 61, 62,
                                      70, 72, 75,
                                      80, 86, 87, 89,
-                                     90, 100, 101, 110, 120])
+                                     90, 100, 101, 103, 107, 110, 120])
 
     # Some versions do not have pre-gathered InsAsmRepos, but since the encoding may be almost identical
     # we may just copy the InsAsmRepos from another version     
@@ -42,9 +42,11 @@ class CuSMVersion(object):
                        70:'Volta',   72:'Turing',  75:'Turing',
                        80:'Ampere',  86:'Ampere',  87:'AmpereOrin',
                        89:'Ada', 90:'Hopper',
-                       100:'BlackwellUltra',
+                       100:'Blackwell',
                        101:'BlackwellThorOld',
                        110:'BlackwellThor',
+                       103:'BlackwellUltra',
+                       107:'Rubin',
                        120:'BlackwellGeforce'}
 
     PadBytes_5x_6x  = bytes.fromhex('e00700fc00801f00 000f07000000b050 000f07000000b050 000f07000000b050')
